@@ -5,12 +5,12 @@
 # @Last Modified time: 2019-06-09 11:39:26
 
 # 软件包列表
-pkglist="wget unzip grep sed tar ca-certificates coreutils-whoami php7 php7-cgi php7-cli php7-fastcgi php7-fpm php7-mod-mysqli php7-mod-pdo php7-mod-pdo-mysql nginx-extras mariadb-server mariadb-server-extra mariadb-client mariadb-client-extra"
+pkglist="wget unzip grep sed tar ca-certificates coreutils-whoami php8 php8-cgi php8-cli php8-fastcgi php8-fpm php8-mod-mysqli php8-mod-pdo php8-mod-pdo-mysql nginx-extras mariadb-server mariadb-server-extra mariadb-client mariadb-client-extra"
 
-phpmod="php7-mod-calendar php7-mod-ctype php7-mod-curl php7-mod-dom php7-mod-exif php7-mod-fileinfo php7-mod-ftp php7-mod-gd php7-mod-gettext php7-mod-gmp php7-mod-hash php7-mod-iconv php7-mod-intl php7-mod-json php7-mod-ldap php7-mod-session php7-mod-mbstring php7-mod-opcache php7-mod-openssl php7-mod-pcntl php7-mod-phar php7-pecl-redis php7-mod-session php7-mod-shmop php7-mod-simplexml php7-mod-snmp php7-mod-soap php7-mod-sockets php7-mod-sqlite3 php7-mod-sysvmsg php7-mod-sysvsem php7-mod-sysvshm php7-mod-tokenizer php7-mod-xml php7-mod-xmlreader php7-mod-xmlwriter php7-mod-zip php7-pecl-dio php7-pecl-http php7-pecl-libevent php7-pecl-propro php7-pecl-raphf redis snmpd snmp-mibs snmp-utils zoneinfo-core zoneinfo-asia"
+phpmod="php8-mod-calendar php8-mod-ctype php8-mod-curl php8-mod-dom php8-mod-exif php8-mod-fileinfo php8-mod-ftp php8-mod-gd php8-mod-gettext php8-mod-gmp php8-mod-hash php8-mod-iconv php8-mod-intl php8-mod-json php8-mod-ldap php8-mod-session php8-mod-mbstring php8-mod-opcache php8-mod-openssl php8-mod-pcntl php8-mod-phar php8-pecl-redis php8-mod-session php8-mod-shmop php8-mod-simplexml php8-mod-snmp php8-mod-soap php8-mod-sockets php8-mod-sqlite3 php8-mod-sysvmsg php8-mod-sysvsem php8-mod-sysvshm php8-mod-tokenizer php8-mod-xml php8-mod-xmlreader php8-mod-xmlwriter php8-mod-zip php8-pecl-dio php8-pecl-http php8-pecl-libevent php8-pecl-propro php8-pecl-raphf redis snmpd snmp-mibs snmp-utils zoneinfo-core zoneinfo-asia"
 
 # 后续可能增加的包(缺少源支持)
-# php7-mod-imagick imagemagick imagemagick-jpeg imagemagick-png imagemagick-tiff imagemagick-tools
+# php8-mod-imagick imagemagick imagemagick-jpeg imagemagick-png imagemagick-tiff imagemagick-tools
 
 # Web程序
 # (1) phpMyAdmin（数据库管理工具）
@@ -221,7 +221,7 @@ nginx_special_conf()
 cat > "/opt/etc/nginx/conf/php-fpm.conf" <<-\OOO
 location ~ \.php(?:$|/) {
     fastcgi_split_path_info ^(.+\.php)(/.+)$; 
-    fastcgi_pass unix:/opt/var/run/php7-fpm.sock;
+    fastcgi_pass unix:/opt/var/run/php8-fpm.sock;
     fastcgi_index index.php;
     fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
     include fastcgi_params;
@@ -273,7 +273,7 @@ location ~ ^/(?:index|remote|public|cron|core/ajax/update|status|ocs/v[12]|updat
     fastcgi_param PATH_INFO $fastcgi_path_info;
     fastcgi_param modHeadersAvailable true;
     fastcgi_param front_controller_active true;
-    fastcgi_pass unix:/opt/var/run/php7-fpm.sock;
+    fastcgi_pass unix:/opt/var/run/php8-fpm.sock;
     fastcgi_intercept_errors on;
     fastcgi_request_buffering off;
 }
@@ -347,7 +347,7 @@ location ~ ^/(?:index|remote|public|cron|core/ajax/update|status|ocs/v[12]|updat
     fastcgi_param modHeadersAvailable true;
     fastcgi_param front_controller_active true;
     fastcgi_read_timeout 180;
-    fastcgi_pass unix:/opt/var/run/php7-fpm.sock;
+    fastcgi_pass unix:/opt/var/run/php8-fpm.sock;
     fastcgi_intercept_errors on;
     fastcgi_request_buffering on;
 }
@@ -404,7 +404,7 @@ location / {
 location ~ \.php$ {
     include fastcgi.conf;
     fastcgi_intercept_errors on;
-    fastcgi_pass unix:/opt/var/run/php7-fpm.sock;
+    fastcgi_pass unix:/opt/var/run/php8-fpm.sock;
     fastcgi_buffers 16 16k;
     fastcgi_buffer_size 32k;
 }
@@ -500,8 +500,8 @@ onmp restart
 ############## PHP初始化 #############
 init_php()
 {
-# PHP7设置 
-/opt/etc/init.d/S79php7-fpm stop > /dev/null 2>&1
+# php8设置 
+/opt/etc/init.d/S79php8-fpm stop > /dev/null 2>&1
 
 mkdir -p /opt/usr/php/tmp/
 chmod -R 777 /opt/usr/php/tmp/
@@ -512,7 +512,7 @@ sed -e "s/.*output_buffering = .*/output_buffering = 4096/g" -i /opt/etc/php.ini
 sed -e "s/.*post_max_size = .*/post_max_size = 8000M/g" -i /opt/etc/php.ini
 sed -e "s/.*max_execution_time = .*/max_execution_time = 2000 /g" -i /opt/etc/php.ini
 sed -e "s/.*upload_max_filesize.*/upload_max_filesize = 8000M/g" -i /opt/etc/php.ini
-sed -e "s/.*listen.mode.*/listen.mode = 0666/g" -i /opt/etc/php7-fpm.d/www.conf
+sed -e "s/.*listen.mode.*/listen.mode = 0666/g" -i /opt/etc/php8-fpm.d/www.conf
 
 # PHP配置文件
 cat >> "/opt/etc/php.ini" <<-\PHPINI
@@ -530,7 +530,7 @@ mysqli.default_socket=/opt/var/run/mysqld.sock
 pdo_mysql.default_socket=/opt/var/run/mysqld.sock
 PHPINI
 
-cat >> "/opt/etc/php7-fpm.d/www.conf" <<-\PHPFPM
+cat >> "/opt/etc/php8-fpm.d/www.conf" <<-\PHPFPM
 env[HOSTNAME] = $HOSTNAME
 env[PATH] = /opt/bin:/usr/local/bin:/usr/bin:/bin
 env[TMP] = /opt/tmp
@@ -553,7 +553,7 @@ set_passwd()
 remove_onmp()
 {
     /opt/etc/init.d/S70mysqld stop > /dev/null 2>&1
-    /opt/etc/init.d/S79php7-fpm stop > /dev/null 2>&1
+    /opt/etc/init.d/S79php8-fpm stop > /dev/null 2>&1
     /opt/etc/init.d/S80nginx stop > /dev/null 2>&1
     /opt/etc/init.d/S70redis stop > /dev/null 2>&1
     killall -9 nginx mysqld php-fpm redis-server > /dev/null 2>&1
@@ -607,12 +607,12 @@ vhost_list()
 onmp_restart()
 {
     /opt/etc/init.d/S70mysqld stop > /dev/null 2>&1
-    /opt/etc/init.d/S79php7-fpm stop > /dev/null 2>&1
+    /opt/etc/init.d/S79php8-fpm stop > /dev/null 2>&1
     /opt/etc/init.d/S80nginx stop > /dev/null 2>&1
     killall -9 nginx mysqld php-fpm > /dev/null 2>&1
     sleep 3
     /opt/etc/init.d/S70mysqld start > /dev/null 2>&1
-    /opt/etc/init.d/S79php7-fpm start > /dev/null 2>&1
+    /opt/etc/init.d/S79php8-fpm start > /dev/null 2>&1
     /opt/etc/init.d/S80nginx start > /dev/null 2>&1
     sleep 3
     num=0
@@ -650,7 +650,7 @@ case $1 in
     echo "onmp正在停止"
     logger -t "【ONMP】" "正在停止"
     /opt/etc/init.d/S70mysqld stop > /dev/null 2>&1
-    /opt/etc/init.d/S79php7-fpm stop > /dev/null 2>&1
+    /opt/etc/init.d/S79php8-fpm stop > /dev/null 2>&1
     /opt/etc/init.d/S80nginx stop > /dev/null 2>&1
     echo "onmp已停止"
     logger -t "【ONMP】" "已停止"
@@ -673,9 +673,9 @@ case $1 in
 
     php )
     case $2 in
-        start ) /opt/etc/init.d/S79php7-fpm start;;
-        stop ) /opt/etc/init.d/S79php7-fpm stop;;
-        restart ) /opt/etc/init.d/S79php7-fpm restart;;
+        start ) /opt/etc/init.d/S79php8-fpm start;;
+        stop ) /opt/etc/init.d/S79php8-fpm stop;;
+        restart ) /opt/etc/init.d/S79php8-fpm restart;;
         * ) echo "onmp php start|restart|stop";;
     esac
     ;;
