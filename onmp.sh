@@ -151,7 +151,7 @@ init_onmp()
     # 添加探针
     cp /opt/onmp/tz.php /opt/wwwroot/default -R
     add_vhost 81 default
-    sed -e "s/.*\#php-fpm.*/    include \/opt\/etc\/nginx\/conf\/php-fpm.conf\;/g" -i /opt/etc/nginx/vhost/default.conf
+    sed -e "s/.*\#php8-fpm.*/    include \/opt\/etc\/nginx\/conf\/php8-fpm.conf\;/g" -i /opt/etc/nginx/vhost/default.conf
     chmod -R 777 /opt/wwwroot/default
 
     # 生成ONMP命令
@@ -217,8 +217,8 @@ nginx_special_conf
 ##### 特定程序的nginx配置 #####
 nginx_special_conf()
 {
-# php-fpm
-cat > "/opt/etc/nginx/conf/php-fpm.conf" <<-\OOO
+# php8-fpm
+cat > "/opt/etc/nginx/conf/php8-fpm.conf" <<-\OOO
 location ~ \.php(?:$|/) {
     fastcgi_split_path_info ^(.+\.php)(/.+)$; 
     fastcgi_pass unix:/opt/var/run/php8-fpm.sock;
@@ -556,7 +556,7 @@ remove_onmp()
     /opt/etc/init.d/S79php8-fpm stop > /dev/null 2>&1
     /opt/etc/init.d/S80nginx stop > /dev/null 2>&1
     /opt/etc/init.d/S70redis stop > /dev/null 2>&1
-    killall -9 nginx mysqld php-fpm redis-server > /dev/null 2>&1
+    killall -9 nginx mysqld php8-fpm redis-server > /dev/null 2>&1
     for pkg in $pkglist; do
         opkg remove $pkg --force-depends
     done
@@ -609,14 +609,14 @@ onmp_restart()
     /opt/etc/init.d/S70mysqld stop > /dev/null 2>&1
     /opt/etc/init.d/S79php8-fpm stop > /dev/null 2>&1
     /opt/etc/init.d/S80nginx stop > /dev/null 2>&1
-    killall -9 nginx mysqld php-fpm > /dev/null 2>&1
+    killall -9 nginx mysqld php8-fpm > /dev/null 2>&1
     sleep 3
     /opt/etc/init.d/S70mysqld start > /dev/null 2>&1
     /opt/etc/init.d/S79php8-fpm start > /dev/null 2>&1
     /opt/etc/init.d/S80nginx start > /dev/null 2>&1
     sleep 3
     num=0
-    for PROC in 'nginx' 'php-fpm' 'mysqld'; do 
+    for PROC in 'nginx' 'php8-fpm' 'mysqld'; do 
         if [ -n "`pidof $PROC`" ]; then
             echo $PROC "启动成功";
         else
@@ -881,7 +881,7 @@ fi
 
 #     # 添加到虚拟主机
 #     add_vhost $port $webdir
-#     sed -e "s/.*\#php-fpm.*/    include \/opt\/etc\/nginx\/conf\/php-fpm.conf\;/g" -i /opt/etc/nginx/vhost/$webdir.conf         # 添加公共php-fpm支持
+#     sed -e "s/.*\#php8-fpm.*/    include \/opt\/etc\/nginx\/conf\/php8-fpm.conf\;/g" -i /opt/etc/nginx/vhost/$webdir.conf         # 添加公共php8-fpm支持
 #     onmp restart >/dev/null 2>&1
 #     echo "$name安装完成"
 #     echo "浏览器地址栏输入：$localhost:$port 即可访问"
@@ -907,7 +907,7 @@ install_phpmyadmin()
 
     # 添加到虚拟主机
     add_vhost $port $webdir
-    sed -e "s/.*\#php-fpm.*/    include \/opt\/etc\/nginx\/conf\/php-fpm.conf\;/g" -i /opt/etc/nginx/vhost/$webdir.conf
+    sed -e "s/.*\#php8-fpm.*/    include \/opt\/etc\/nginx\/conf\/php8-fpm.conf\;/g" -i /opt/etc/nginx/vhost/$webdir.conf
     onmp restart >/dev/null 2>&1
     echo "$name安装完成"
     echo "浏览器地址栏输入：$localhost:$port 即可访问"
@@ -930,7 +930,7 @@ install_wordpress()
 
     # 添加到虚拟主机
     add_vhost $port $webdir
-    # WordPress的配置文件中有php-fpm了, 不需要外部引入
+    # WordPress的配置文件中有php8-fpm了, 不需要外部引入
     sed -e "s/.*\#otherconf.*/    include \/opt\/etc\/nginx\/conf\/wordpress.conf\;/g" -i /opt/etc/nginx/vhost/$webdir.conf
     onmp restart >/dev/null 2>&1
     echo "$name安装完成"
@@ -956,7 +956,7 @@ install_h5ai()
 
     # 添加到虚拟主机
     add_vhost $port $webdir
-    sed -e "s/.*\#php-fpm.*/    include \/opt\/etc\/nginx\/conf\/php-fpm.conf\;/g" -i /opt/etc/nginx/vhost/$webdir.conf
+    sed -e "s/.*\#php8-fpm.*/    include \/opt\/etc\/nginx\/conf\/php8-fpm.conf\;/g" -i /opt/etc/nginx/vhost/$webdir.conf
     sed -e "s/.*\index index.html.*/    index  index.html  index.php  \/_h5ai\/public\/index.php;/g" -i /opt/etc/nginx/vhost/$webdir.conf
     onmp restart >/dev/null 2>&1
     echo "$name安装完成"
@@ -981,7 +981,7 @@ install_lychee()
 
     # 添加到虚拟主机
     add_vhost $port $webdir
-    sed -e "s/.*\#php-fpm.*/    include \/opt\/etc\/nginx\/conf\/php-fpm.conf\;/g" -i /opt/etc/nginx/vhost/$webdir.conf
+    sed -e "s/.*\#php8-fpm.*/    include \/opt\/etc\/nginx\/conf\/php8-fpm.conf\;/g" -i /opt/etc/nginx/vhost/$webdir.conf
     onmp restart >/dev/null 2>&1
     echo "$name安装完成"
     echo "浏览器地址栏输入：$localhost:$port 即可访问"
@@ -1006,7 +1006,7 @@ install_owncloud()
 
     # 添加到虚拟主机
     add_vhost $port $webdir
-    # Owncloud的配置文件中有php-fpm了, 不需要外部引入
+    # Owncloud的配置文件中有php8-fpm了, 不需要外部引入
     sed -e "s/.*\#otherconf.*/    include \/opt\/etc\/nginx\/conf\/owncloud.conf\;/g" -i /opt/etc/nginx/vhost/$webdir.conf
 
     onmp restart >/dev/null 2>&1
@@ -1034,7 +1034,7 @@ install_nextcloud()
 
     # 添加到虚拟主机
     add_vhost $port $webdir
-    # nextcloud的配置文件中有php-fpm了, 不需要外部引入
+    # nextcloud的配置文件中有php8-fpm了, 不需要外部引入
     sed -e "s/.*\#otherconf.*/    include \/opt\/etc\/nginx\/conf\/nextcloud.conf\;/g" -i /opt/etc/nginx/vhost/$webdir.conf
 
     onmp restart >/dev/null 2>&1
@@ -1062,7 +1062,7 @@ install_kodexplorer()
 
     # 添加到虚拟主机
     add_vhost $port $webdir
-    sed -e "s/.*\#php-fpm.*/    include \/opt\/etc\/nginx\/conf\/php-fpm.conf\;/g" -i /opt/etc/nginx/vhost/$webdir.conf
+    sed -e "s/.*\#php8-fpm.*/    include \/opt\/etc\/nginx\/conf\/php8-fpm.conf\;/g" -i /opt/etc/nginx/vhost/$webdir.conf
     onmp restart >/dev/null 2>&1
     echo "$name安装完成"
     echo "浏览器地址栏输入：$localhost:$port 即可访问"
@@ -1085,7 +1085,7 @@ install_typecho()
 
     # 添加到虚拟主机
     add_vhost $port $webdir
-    sed -e "s/.*\#php-fpm.*/    include \/opt\/etc\/nginx\/conf\/php-fpm.conf\;/g" -i /opt/etc/nginx/vhost/$webdir.conf         # 添加php-fpm支持
+    sed -e "s/.*\#php8-fpm.*/    include \/opt\/etc\/nginx\/conf\/php8-fpm.conf\;/g" -i /opt/etc/nginx/vhost/$webdir.conf         # 添加php8-fpm支持
     sed -e "s/.*\#otherconf.*/    include \/opt\/etc\/nginx\/conf\/typecho.conf\;/g" -i /opt/etc/nginx/vhost/$webdir.conf
     onmp restart >/dev/null 2>&1
     echo "$name安装完成"
@@ -1110,7 +1110,7 @@ install_zblog()
 
     # 添加到虚拟主机
     add_vhost $port $webdir
-    sed -e "s/.*\#php-fpm.*/    include \/opt\/etc\/nginx\/conf\/php-fpm.conf\;/g" -i /opt/etc/nginx/vhost/$webdir.conf         # 添加php-fpm支持
+    sed -e "s/.*\#php8-fpm.*/    include \/opt\/etc\/nginx\/conf\/php8-fpm.conf\;/g" -i /opt/etc/nginx/vhost/$webdir.conf         # 添加php8-fpm支持
     onmp restart >/dev/null 2>&1
     echo "$name安装完成"
     echo "浏览器地址栏输入：$localhost:$port 即可访问"
@@ -1132,7 +1132,7 @@ install_dzzoffice()
 
     # 添加到虚拟主机
     add_vhost $port $webdir
-    sed -e "s/.*\#php-fpm.*/    include \/opt\/etc\/nginx\/conf\/php-fpm.conf\;/g" -i /opt/etc/nginx/vhost/$webdir.conf         # 添加php-fpm支持
+    sed -e "s/.*\#php8-fpm.*/    include \/opt\/etc\/nginx\/conf\/php8-fpm.conf\;/g" -i /opt/etc/nginx/vhost/$webdir.conf         # 添加php8-fpm支持
     onmp restart >/dev/null 2>&1
     echo "$name安装完成"
     echo "浏览器地址栏输入：$localhost:$port 即可访问"
@@ -1149,7 +1149,7 @@ server {
     server_name localhost;
     root /opt/wwwroot/www/;
     index index.html index.htm index.php tz.php;
-    #php-fpm
+    #php8-fpm
     #otherconf
 }
 EOF
